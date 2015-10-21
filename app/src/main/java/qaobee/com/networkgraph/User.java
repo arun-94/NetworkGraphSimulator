@@ -10,8 +10,20 @@ public class User
     String name;
     String emailId;
     String mobileNo;
-    int age;
+    String age;
     String address;
+
+    public int getId()
+    {
+        return id;
+    }
+
+    public void setId(int id)
+    {
+        this.id = id;
+    }
+
+    int id;
     ArrayList<User> friends = new ArrayList<>();
 
 
@@ -45,12 +57,12 @@ public class User
         this.mobileNo = mobileNo;
     }
 
-    public int getAge()
+    public String getAge()
     {
         return age;
     }
 
-    public void setAge(int age)
+    public void setAge(String age)
     {
         this.age = age;
     }

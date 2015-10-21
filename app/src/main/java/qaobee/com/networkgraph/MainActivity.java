@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
         for(int i = 0; i < 6; i++) {
             User a = new User();
             a.setName("User " + (i + 1));
-            a.setAge((int) (Math.random() * 1000) % 50);
+            a.setAge("" + 10);
             a.setEmailId("user" + (i + 1) + "@user.com");
             a.setMobileNo("1234567890");
             users.add(a);
