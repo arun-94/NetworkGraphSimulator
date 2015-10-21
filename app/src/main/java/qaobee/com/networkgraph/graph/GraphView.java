@@ -13,11 +13,15 @@ import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
 
 import net.xqhs.graphs.graph.Edge;
 import net.xqhs.graphs.graph.Graph;
 import net.xqhs.graphs.graph.Node;
+
+import java.util.ArrayList;
 
 import qaobee.com.networkgraph.R;
 import qaobee.com.networkgraph.graph.beans.ArcUtils;
@@ -29,6 +33,10 @@ import qaobee.com.networkgraph.graph.layout.FRLayout;
  * The type Graph view.
  */
 public class GraphView extends View {
+
+    private ArrayList<Point2D> userPosition = new ArrayList<>();
+    private ArrayList<Bitmap> userBitmaps = new ArrayList<>();
+
     /**
      * The Graph.
      */
@@ -100,7 +108,8 @@ public class GraphView extends View {
         Paint whitePaint = new Paint();
         paint.setAntiAlias(true);
 
-        whitePaint.setColor(resources.getColor(android.R.color.white));
+
+        whitePaint.setColor(resources.getColor(R.color.primary_material_light));
         whitePaint.setStyle(Paint.Style.FILL_AND_STROKE);
         whitePaint.setStrokeWidth(2f);
         whitePaint.setShadowLayer(5, 0, 0, resources.getColor(android.R.color.black));
@@ -111,12 +120,12 @@ public class GraphView extends View {
             Point2D p1 = layout.transform(edge.getFrom());
             Point2D p2 = layout.transform(edge.getTo());
 
-            paint.setStrokeWidth(Float.valueOf(edge.getLabel()) + 1f);
+            paint.setStrokeWidth(1f);
             paint.setColor(resources.getColor(android.R.color.holo_blue_light));
             Paint curve = new Paint();
             curve.setAntiAlias(true);
             curve.setStyle(Paint.Style.STROKE);
-            curve.setStrokeWidth(2);
+            curve.setStrokeWidth(1);
             curve.setColor(resources.getColor(android.R.color.holo_blue_light));
             PointF e1 = new PointF((float) p1.getX(), (float) p1.getY());
             PointF e2 = new PointF((float) p2.getX(), (float) p2.getY());
@@ -132,19 +141,43 @@ public class GraphView extends View {
         paint.setColor(resources.getColor(android.R.color.holo_blue_light));
         for (Node node : graph.getNodes()) {
             Point2D position = layout.transform(node);
+            userPosition.add(position);
             canvas.drawCircle((float) position.getX(), (float) position.getY(), 40, whitePaint);
-            Drawable drawable = resources.getDrawable(R.drawable.avatar);
+            Drawable drawable = resources.getDrawable(R.drawable.ic_account_black_18dp);
             if(drawable != null) {
                 Bitmap b = ((BitmapDrawable) drawable).getBitmap();
                 Bitmap bitmap = b.copy(Bitmap.Config.ARGB_8888, true);
                 Bitmap roundBitmap = getCroppedBitmap(bitmap, 75);
+                userBitmaps.add(roundBitmap);
                 canvas.drawBitmap(roundBitmap, (float) position.getX() - 38f, (float) position.getY() - 38f, null);
             }
-            canvas.drawRect((float) position.getX() - 20, (float) position.getY() + 50, (float) position.getX() + 20, (float) position.getY() + 10, whitePaint);
+            //canvas.drawRect((float) position.getX() - 20, (float) position.getY() + 50, (float) position.getX() + 20, (float) position.getY() + 10, whitePaint);
             canvas.drawText(node.getLabel(), (float) position.getX(), (float) position.getY() + 40, paint);
         }
     }
 
+    @Override
+    public boolean onTouchEvent(MotionEvent event)
+    {
+        int action = event.getAction();
+        float x = event.getX();  // or getRawX();
+        float y = event.getY();
+
+        switch(action){
+            case MotionEvent.ACTION_DOWN:
+                Toast.makeText(getContext(), "x = " + x + "y =  " + y , Toast.LENGTH_SHORT).show();
+                for(int i = 0; i < userPosition.size(); i++)
+                {
+
+                    if (x >= userPosition.get(i).getX() && x < (userPosition.get(i).getX() + userBitmaps.get(i).getWidth()) && y >= userPosition.get(i).getY() && y < (userPosition.get(i).getY() + userBitmaps.get(i).getHeight()))
+                    {
+                        Toast.makeText(getContext(), "tada, if this is true, you've started your click inside your bitmap", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                break;
+        }
+        return super.onTouchEvent(event);
+    }
 
     /**
      * On draw.

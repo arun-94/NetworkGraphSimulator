@@ -66,9 +66,9 @@ public class ArcUtils {
         canvas.drawArc(oval, a4, radius, false, paint);
         double deltay = -Math.sin(a3) * (r - h);
         double deltax = Math.cos(a3) * (r - h);
-        canvas.drawRect((float) (mX + deltax) - 20f, (float) (mY + deltay) + 20f, (float) (mX + deltax) + 20f, (float) (mY + deltay) - 20f, recPaint);
+//        canvas.drawRect((float) (mX + deltax) - 20f, (float) (mY + deltay) + 20f, (float) (mX + deltax) + 20f, (float) (mY + deltay) - 20f, recPaint);
 
-        canvas.drawText(String.valueOf(value), (float) (mX + deltax), (float) (mY + deltay) + 10, textPaint);
+  //      canvas.drawText(String.valueOf(value), (float) (mX + deltax), (float) (mY + deltay) + 10, textPaint);
     }
 
     /**

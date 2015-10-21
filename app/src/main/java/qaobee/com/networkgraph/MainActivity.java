@@ -4,6 +4,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
 import android.view.SurfaceHolder;
 import android.view.View;
 import android.widget.RelativeLayout;
@@ -14,6 +15,8 @@ import net.xqhs.graphs.graph.SimpleEdge;
 import net.xqhs.graphs.graph.SimpleGraph;
 import net.xqhs.graphs.graph.SimpleNode;
 
+import java.util.ArrayList;
+
 import qaobee.com.networkgraph.graph.GraphSurfaceView;
 import qaobee.com.networkgraph.graph.GraphView;
 import qaobee.com.networkgraph.graph.beans.Dimension;
@@ -22,6 +25,10 @@ import qaobee.com.networkgraph.graph.beans.Dimension;
  * The type Main activity.
  */
 public class MainActivity extends AppCompatActivity implements Runnable {
+
+    private int height, width;
+    private ArrayList<User> users;
+
     /**
      * The Locker.
      */
@@ -52,25 +59,64 @@ public class MainActivity extends AppCompatActivity implements Runnable {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        DisplayMetrics displaymetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+        height = displaymetrics.heightPixels;
+        width = displaymetrics.widthPixels;
+
+        users = new ArrayList<>();
+        createUsers();
+        setUpGraph();
+    }
+
+
+    private void createUsers() {
+
+        for(int i = 0; i < 6; i++) {
+            User a = new User();
+            a.setName("User " + (i + 1));
+            a.setAge((int) (Math.random() * 1000) % 50);
+            a.setEmailId("user" + (i + 1) + "@user.com");
+            a.setMobileNo("1234567890");
+            users.add(a);
+        }
+    }
+
+    private void setUpGraph() {
         Graph graph = new SimpleGraph();
-        Node v1 = new SimpleNode("18");
-        Node v2 = new SimpleNode("24");
+        Node v1 = new SimpleNode("" + users.get(0).getName());
+        Node v2 = new SimpleNode("" + users.get(1).getName());
         graph.addNode(v1);
         graph.addNode(v2);
-        graph.addEdge(new SimpleEdge(v1, v2, "12"));
-        Node v3 = new SimpleNode("7");
+        graph.addEdge(new SimpleEdge(v1, v2, "1"));
+        users.get(0).addFriend(users.get(1));
+        users.get(1).addFriend(users.get(0));
+
+        Node v3 = new SimpleNode("" + users.get(2).getName());
         graph.addNode(v3);
-        graph.addEdge(new SimpleEdge(v2, v3, "23"));
-        v1 = new SimpleNode("14");
-        graph.addNode(v1);
-        graph.addEdge(new SimpleEdge(v3, v1, "34"));
-        v1 = new SimpleNode("10");
-        graph.addNode(v1);
-        graph.addEdge(new SimpleEdge(v3, v1, "35"));
-        v1 = new SimpleNode("11");
-        graph.addNode(v1);
-        graph.addEdge(new SimpleEdge(v1, v3, "36"));
-        graph.addEdge(new SimpleEdge(v3, v1, "6"));
+        graph.addEdge(new SimpleEdge(v2, v3, "1"));
+        users.get(1).addFriend(users.get(2));
+        users.get(2).addFriend(users.get(1));
+
+        Node v4 = new SimpleNode("" + users.get(3).getName());
+        graph.addNode(v4);
+        graph.addEdge(new SimpleEdge(v3, v4, "1"));
+        users.get(3).addFriend(users.get(2));
+        users.get(2).addFriend(users.get(3));
+
+        Node v5 = new SimpleNode("" + users.get(4).getName());
+        graph.addNode(v5);
+        graph.addEdge(new SimpleEdge(v3, v5, "1"));
+        users.get(2).addFriend(users.get(4));
+        users.get(4).addFriend(users.get(2));
+
+        Node v6 = new SimpleNode("" + users.get(5).getName());
+        graph.addNode(v6);
+        graph.addEdge(new SimpleEdge(v6, v3, "1"));
+        users.get(2).addFriend(users.get(5));
+        users.get(5).addFriend(users.get(2));
+
 
         View surface = findViewById(R.id.mysurface);
         RelativeLayout parent = (RelativeLayout) surface.getParent();
@@ -78,18 +124,16 @@ public class MainActivity extends AppCompatActivity implements Runnable {
         parent.removeView(surface);
         graphSurface = new GraphSurfaceView(this.getApplicationContext());
         RelativeLayout.LayoutParams layoutParams =
-                new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
-                        RelativeLayout.LayoutParams.FILL_PARENT);
-        layoutParams.addRule(RelativeLayout.BELOW, R.id.buttonswap);
+                new RelativeLayout.LayoutParams(width,
+                        height);
+        // layoutParams.addRule(RelativeLayout.BELOW, R.id.buttonswap);
         parent.addView(graphSurface, index, layoutParams);
         holder = graphSurface.getHolder();
         currentGraphView = new GraphView(this);
         currentGraphView.init(graph, new Dimension(400, 400));
     }
 
-    /**
-     * Run void.
-     */
+
     @Override
     public void run() {
         // TODO Auto-generated method stub
@@ -101,7 +145,9 @@ public class MainActivity extends AppCompatActivity implements Runnable {
             /** Start editing pixels in this surface.*/
             Canvas canvas = holder.lockCanvas();
 
-            currentGraphView.resize(new Dimension(graphSurface.getWidth(), graphSurface.getHeight()));
+            int width = graphSurface.getWidth() - 200;
+            int height = graphSurface.getHeight();
+            currentGraphView.resize(new Dimension(width, graphSurface.getHeight()- 50));
             currentGraphView.doLayout();
 
             draw(canvas);
