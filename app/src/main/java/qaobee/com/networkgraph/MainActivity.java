@@ -24,10 +24,13 @@ import qaobee.com.networkgraph.graph.beans.Dimension;
 /**
  * The type Main activity.
  */
-public class MainActivity extends AppCompatActivity implements Runnable {
+public class MainActivity extends AppCompatActivity implements Runnable
+{
 
     private int height, width;
-    private ArrayList<User> users;
+    private AppManager manager;
+    private ArrayList<Node> nodes;
+    private ArrayList<String> ids;
 
     /**
      * The Locker.
@@ -56,36 +59,53 @@ public class MainActivity extends AppCompatActivity implements Runnable {
      * @param savedInstanceState the saved instance state
      */
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        manager = (AppManager) getApplication();
+        nodes = new ArrayList<>(manager.userList.size());
+        ids = new ArrayList<>(manager.userList.size());
         DisplayMetrics displaymetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
         height = displaymetrics.heightPixels;
         width = displaymetrics.widthPixels;
 
-        users = new ArrayList<>();
-        createUsers();
         setUpGraph();
     }
 
 
-    private void createUsers() {
-
-        for(int i = 0; i < 6; i++) {
-            User a = new User();
-            a.setName("User " + (i + 1));
-            a.setAge("" + 10);
-            a.setEmailId("user" + (i + 1) + "@user.com");
-            a.setMobileNo("1234567890");
-            users.add(a);
-        }
-    }
-
-    private void setUpGraph() {
+    private void setUpGraph()
+    {
         Graph graph = new SimpleGraph();
-        Node v1 = new SimpleNode("" + users.get(0).getName());
+
+        for (int i = 0; i < manager.userList.size(); i++)
+        {
+            nodes.add(null);
+            ids.add(null);
+        }
+
+        for (int i = 0; i < manager.userList.size(); i++)
+        {
+
+            nodes.set(i, new SimpleNode("" + manager.userList.get(i).getName()));
+            ids.add(manager.userList.get(i).getName());
+            graph.add(nodes.get(i));
+        }
+        for (int i = 0; i < manager.userList.size(); i++)
+        {
+            ArrayList<User> userFriends = manager.userList.get(i).getFriends();
+            Node a = nodes.get(i);
+            for (int j = 0; j < manager.userList.size(); j++)
+            {
+                if(userFriends.contains(manager.userList.get(j))) {
+                    Node b = nodes.get(j);
+                    graph.addEdge(new SimpleEdge(a, b, "1"));
+                }
+            }
+        }
+
+        /*Node v1 = new SimpleNode("" + users.get(0).getName());
         Node v2 = new SimpleNode("" + users.get(1).getName());
         graph.addNode(v1);
         graph.addNode(v2);
@@ -115,17 +135,16 @@ public class MainActivity extends AppCompatActivity implements Runnable {
         graph.addNode(v6);
         graph.addEdge(new SimpleEdge(v6, v3, "1"));
         users.get(2).addFriend(users.get(5));
-        users.get(5).addFriend(users.get(2));
+        users.get(5).addFriend(users.get(2));*/
 
 
         View surface = findViewById(R.id.mysurface);
         RelativeLayout parent = (RelativeLayout) surface.getParent();
         int index = parent.indexOfChild(surface);
+
         parent.removeView(surface);
         graphSurface = new GraphSurfaceView(this.getApplicationContext());
-        RelativeLayout.LayoutParams layoutParams =
-                new RelativeLayout.LayoutParams(width,
-                        height);
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(width, height);
         // layoutParams.addRule(RelativeLayout.BELOW, R.id.buttonswap);
         parent.addView(graphSurface, index, layoutParams);
         holder = graphSurface.getHolder();
@@ -135,11 +154,14 @@ public class MainActivity extends AppCompatActivity implements Runnable {
 
 
     @Override
-    public void run() {
+    public void run()
+    {
         // TODO Auto-generated method stub
-        while (locker) {
+        while (locker)
+        {
             //checks if the lockCanvas() method will be success,and if not, will check this statement again
-            if (!holder.getSurface().isValid()) {
+            if (!holder.getSurface().isValid())
+            {
                 continue;
             }
             /** Start editing pixels in this surface.*/
@@ -147,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
 
             int width = graphSurface.getWidth() - 200;
             int height = graphSurface.getHeight();
-            currentGraphView.resize(new Dimension(width, graphSurface.getHeight()- 50));
+            currentGraphView.resize(new Dimension(width, graphSurface.getHeight() - 50));
             currentGraphView.doLayout();
 
             draw(canvas);
@@ -164,7 +186,8 @@ public class MainActivity extends AppCompatActivity implements Runnable {
      *
      * @param canvas the canvas
      */
-    private void draw(Canvas canvas) {
+    private void draw(Canvas canvas)
+    {
         float scaleFactor = graphSurface.getScaleFactor();
 
         canvas.drawColor(Color.WHITE);
@@ -178,7 +201,8 @@ public class MainActivity extends AppCompatActivity implements Runnable {
      * On pause.
      */
     @Override
-    protected void onPause() {
+    protected void onPause()
+    {
         super.onPause();
         pause();
     }
@@ -186,14 +210,18 @@ public class MainActivity extends AppCompatActivity implements Runnable {
     /**
      * Pause void.
      */
-    private void pause() {
+    private void pause()
+    {
         //CLOSE LOCKER FOR run();
         locker = false;
-        while (true) {
-            try {
+        while (true)
+        {
+            try
+            {
                 //WAIT UNTIL THREAD DIE, THEN EXIT WHILE LOOP AND RELEASE a thread
                 thread.join();
-            } catch (InterruptedException e) {
+            } catch (InterruptedException e)
+            {
                 e.printStackTrace();
             }
             break;
@@ -205,7 +233,8 @@ public class MainActivity extends AppCompatActivity implements Runnable {
      * On resume.
      */
     @Override
-    protected void onResume() {
+    protected void onResume()
+    {
         super.onResume();
         resume();
     }
@@ -213,7 +242,8 @@ public class MainActivity extends AppCompatActivity implements Runnable {
     /**
      * Resume void.
      */
-    private void resume() {
+    private void resume()
+    {
         //RESTART THREAD AND OPEN LOCKER FOR run();
         locker = true;
         thread = new Thread(this);

@@ -19,6 +19,7 @@ public class FriendSelectionAdapter extends BaseAdapter
     Context mContext;
     LayoutInflater inflater;
     private ArrayList<User> mainDataList = null;
+    private ArrayList<User> backUpList = null;
     private ArrayList<User> arraylist;
     private int curPos;
 
@@ -28,6 +29,7 @@ public class FriendSelectionAdapter extends BaseAdapter
         this.mainDataList = mainDataList;
         inflater = LayoutInflater.from(mContext);
         this.arraylist = new ArrayList<>(mainDataList);
+        this.backUpList = new ArrayList<>(mainDataList);
         this.curPos = curPos;
     }
 
@@ -59,10 +61,12 @@ public class FriendSelectionAdapter extends BaseAdapter
 
             holder.colorName = (TextView) view.findViewById(R.id.friend_name);
             holder.colorCheck = (CheckBox) view.findViewById(R.id.friend_check_box);
+            holder.friendId = (TextView) view.findViewById(R.id.friend_id);
 
             view.setTag(holder);
             view.setTag(R.id.friend_name, holder.colorName);
             view.setTag(R.id.friend_check_box, holder.colorCheck);
+            view.setTag(R.id.friend_id, holder.friendId);
 
             holder.colorCheck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
             {
@@ -85,8 +89,19 @@ public class FriendSelectionAdapter extends BaseAdapter
 
         holder.colorCheck.setTag(position);
 
-        holder.colorName.setText("Friend " + position);
-        //holder.colorCode.setText(mainDataList.get(position).getCode());
+
+        if(mainDataList.get(position).getId() == mainDataList.get(curPos).getId()) {
+            view.setVisibility(View.GONE);
+        }
+
+        if(mainDataList.get(position).getName() == null)
+        {
+            holder.colorName.setText("Friend ");
+        }
+        else {
+            holder.colorName.setText(mainDataList.get(position).getName());
+        }
+        holder.friendId.setText("" + mainDataList.get(position).getId());
         holder.colorCheck.setChecked(false);
         return view;
     }
@@ -116,6 +131,7 @@ public class FriendSelectionAdapter extends BaseAdapter
     {
         protected CheckBox colorCheck;
         protected TextView colorName;
+        protected TextView friendId;
     }
 
 }
