@@ -105,39 +105,6 @@ public class MainActivity extends AppCompatActivity implements Runnable
             }
         }
 
-        /*Node v1 = new SimpleNode("" + users.get(0).getName());
-        Node v2 = new SimpleNode("" + users.get(1).getName());
-        graph.addNode(v1);
-        graph.addNode(v2);
-        graph.addEdge(new SimpleEdge(v1, v2, "1"));
-        users.get(0).addFriend(users.get(1));
-        users.get(1).addFriend(users.get(0));
-
-        Node v3 = new SimpleNode("" + users.get(2).getName());
-        graph.addNode(v3);
-        graph.addEdge(new SimpleEdge(v2, v3, "1"));
-        users.get(1).addFriend(users.get(2));
-        users.get(2).addFriend(users.get(1));
-
-        Node v4 = new SimpleNode("" + users.get(3).getName());
-        graph.addNode(v4);
-        graph.addEdge(new SimpleEdge(v3, v4, "1"));
-        users.get(3).addFriend(users.get(2));
-        users.get(2).addFriend(users.get(3));
-
-        Node v5 = new SimpleNode("" + users.get(4).getName());
-        graph.addNode(v5);
-        graph.addEdge(new SimpleEdge(v3, v5, "1"));
-        users.get(2).addFriend(users.get(4));
-        users.get(4).addFriend(users.get(2));
-
-        Node v6 = new SimpleNode("" + users.get(5).getName());
-        graph.addNode(v6);
-        graph.addEdge(new SimpleEdge(v6, v3, "1"));
-        users.get(2).addFriend(users.get(5));
-        users.get(5).addFriend(users.get(2));*/
-
-
         View surface = findViewById(R.id.mysurface);
         RelativeLayout parent = (RelativeLayout) surface.getParent();
         int index = parent.indexOfChild(surface);
