@@ -75,8 +75,10 @@ public class FriendSelectionAdapter extends BaseAdapter
                 public void onCheckedChanged(CompoundButton vw, boolean isChecked)
                 {
                     int getPosition = (Integer) vw.getTag();
-                    if(vw.isChecked()) {
+                    if (vw.isChecked())
+                    {
                         mainDataList.get(curPos).addFriend(mainDataList.get(getPosition));
+                        mainDataList.get(getPosition).addFriend(mainDataList.get(curPos));
                     }
                 }
             });
@@ -89,16 +91,25 @@ public class FriendSelectionAdapter extends BaseAdapter
 
         holder.colorCheck.setTag(position);
 
+        for (User user : mainDataList.get(curPos).getFriends())
+        {
+            if (mainDataList.get(position).getId() == user.getId())
+            {
+                view.setVisibility(View.GONE);
+            }
+        }
 
-        if(mainDataList.get(position).getId() == mainDataList.get(curPos).getId()) {
+        if (mainDataList.get(position).getId() == mainDataList.get(curPos).getId())
+        {
             view.setVisibility(View.GONE);
         }
 
-        if(mainDataList.get(position).getName() == null)
+        if (mainDataList.get(position).getName() == null)
         {
             holder.colorName.setText("Friend ");
         }
-        else {
+        else
+        {
             holder.colorName.setText(mainDataList.get(position).getName());
         }
         holder.friendId.setText("" + mainDataList.get(position).getId());

@@ -108,8 +108,6 @@ public class GraphView extends View {
         Paint whitePaint = new Paint();
         paint.setAntiAlias(true);
 
-
-        whitePaint.setColor(resources.getColor(R.color.primary_material_light));
         whitePaint.setStyle(Paint.Style.FILL_AND_STROKE);
         whitePaint.setStrokeWidth(2f);
         whitePaint.setShadowLayer(5, 0, 0, resources.getColor(android.R.color.black));
@@ -140,6 +138,14 @@ public class GraphView extends View {
         paint.setStrokeWidth(0f);
         paint.setColor(resources.getColor(android.R.color.holo_blue_light));
         for (Node node : graph.getNodes()) {
+            String[] contents =  node.getLabel().split(",");
+            if(contents[1].equals("0"))
+                whitePaint.setColor(resources.getColor(R.color.app_primary));
+            else if(contents[1].equals("1"))
+                whitePaint.setColor(resources.getColor(R.color.signal_green));
+            else
+                whitePaint.setColor(resources.getColor(R.color.material_blue_grey_800));
+
             Point2D position = layout.transform(node);
             userPosition.add(position);
             canvas.drawCircle((float) position.getX(), (float) position.getY(), 40, whitePaint);
@@ -152,7 +158,7 @@ public class GraphView extends View {
                 canvas.drawBitmap(roundBitmap, (float) position.getX() - 38f, (float) position.getY() - 38f, null);
             }
             //canvas.drawRect((float) position.getX() - 20, (float) position.getY() + 50, (float) position.getX() + 20, (float) position.getY() + 10, whitePaint);
-            canvas.drawText(node.getLabel(), (float) position.getX(), (float) position.getY() + 40, paint);
+            canvas.drawText(contents[0], (float) position.getX(), (float) position.getY() + 40, paint);
         }
     }
 

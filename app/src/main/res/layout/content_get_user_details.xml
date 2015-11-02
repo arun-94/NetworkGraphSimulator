@@ -40,10 +40,10 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/layoutcontainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:id="@+id/layoutcontainer">
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/userId"
@@ -132,20 +132,36 @@
             android:layout_below="@+id/linearLayout1"
             android:orientation="vertical">
 
-            <com.rengwuxian.materialedittext.MaterialEditText
-                android:id="@+id/editText_address"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="67dp"
-                android:layout_margin="5dp"
-                android:ellipsize="end"
-                android:gravity="top|left"
-                android:hint="Address"
-                android:inputType="text"
-                android:lines="3"
-                android:maxLines="3"
-                android:textSize="16sp"
-                app:met_floatingLabel="highlight"
-                app:met_primaryColor="#ee602d"/>
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <com.rengwuxian.materialedittext.MaterialEditText
+                    android:id="@+id/editText_address"
+                    android:layout_width="match_parent"
+                    android:layout_height="67dp"
+                    android:layout_margin="5dp"
+                    android:ellipsize="end"
+                    android:gravity="top|left"
+                    android:hint="Address"
+                    android:inputType="text"
+                    android:lines="3"
+                    android:maxLines="3"
+                    android:textSize="16sp"
+                    app:met_floatingLabel="highlight"
+                    app:met_primaryColor="#ee602d"
+                    android:layout_weight="0.3"/>
+
+                <CheckBox
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="Is Source?"
+                    android:layout_weight="0.7"
+                    android:id="@+id/is_source"/>
+
+
+            </LinearLayout>
 
             <include
                 android:id="@+id/ll_select_friends"

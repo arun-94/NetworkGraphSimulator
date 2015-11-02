@@ -1,6 +1,8 @@
 package qaobee.com.networkgraph;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 
 /**
  * Created by Arun on 21-Oct-15.
@@ -12,6 +14,35 @@ public class User
     String mobileNo;
     String age;
     String address;
+    HashSet<String> receivedFrom = new HashSet<>();
+    HashMap<String, User> contacts = new HashMap<>();
+    int messageCount = 0;
+    Boolean is_Source;
+    int id;
+    ArrayList<User> friends = new ArrayList<>();
+
+
+    public Boolean getIs_Source()
+    {
+        return is_Source;
+    }
+
+    public void setIs_Source(Boolean is_Source)
+    {
+        this.is_Source = is_Source;
+    }
+
+
+    public int getMessageCount()
+    {
+        return messageCount;
+    }
+
+    public void setMessageCount(int messageCount)
+    {
+        this.messageCount = messageCount;
+    }
+
 
     public int getId()
     {
@@ -22,10 +53,6 @@ public class User
     {
         this.id = id;
     }
-
-    int id;
-    ArrayList<User> friends = new ArrayList<>();
-
 
     public String getName()
     {
@@ -77,7 +104,8 @@ public class User
         this.friends = friends;
     }
 
-    public void addFriend(User friend) {
+    public void addFriend(User friend)
+    {
         this.friends.add(friend);
     }
 

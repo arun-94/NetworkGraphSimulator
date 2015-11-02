@@ -5,9 +5,11 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.View;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import net.xqhs.graphs.graph.Graph;
 import net.xqhs.graphs.graph.Node;
@@ -16,6 +18,8 @@ import net.xqhs.graphs.graph.SimpleGraph;
 import net.xqhs.graphs.graph.SimpleNode;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
 
 import qaobee.com.networkgraph.graph.GraphSurfaceView;
 import qaobee.com.networkgraph.graph.GraphView;
@@ -31,22 +35,16 @@ public class MainActivity extends AppCompatActivity implements Runnable
     private AppManager manager;
     private ArrayList<Node> nodes;
     private ArrayList<String> ids;
+    private User currentSource;
 
-    /**
-     * The Locker.
-     */
+    private static Queue<User> queue;
+
     private boolean locker = true;
-    /**
-     * The Current graph view.
-     */
+
     private GraphView currentGraphView;
-    /**
-     * The Graph surface.
-     */
+
     private GraphSurfaceView graphSurface;
-    /**
-     * The Holder.
-     */
+
     private SurfaceHolder holder;
     /**
      * The Thread.
@@ -66,12 +64,81 @@ public class MainActivity extends AppCompatActivity implements Runnable
         manager = (AppManager) getApplication();
         nodes = new ArrayList<>(manager.userList.size());
         ids = new ArrayList<>(manager.userList.size());
+        queue =  new LinkedList<>();
+
         DisplayMetrics displaymetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
         height = displaymetrics.heightPixels;
         width = displaymetrics.widthPixels;
 
+        //setUpGraph();
+
+        for (int i = 0; i < manager.userList.size(); i++)
+        {
+            if(manager.userList.get(i).getIs_Source())
+                currentSource = manager.userList.get(i);
+        }
+        queue.add(currentSource);
+
+        currentSource.messageCount++;
+
+        floodContactsBFS();
+       // floodContacts(currentSource);
+        //clearGraph();
         setUpGraph();
+
+
+        String message = "";
+
+        for (int i = 0; i < manager.userList.size(); i++)
+        {
+            if(manager.userList.get(i).getFriends().size() == 0)
+                message += manager.userList.get(i).getName() + ", ";
+        }
+
+        message += " cannot be reached as they have no friends";
+
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    private void floodContactsBFS() {
+
+        while(!queue.isEmpty()) {
+            User sourceUser = queue.remove();
+            for(String mobileNo: sourceUser.contacts.keySet()) {
+
+                User friend = sourceUser.contacts.get(mobileNo);
+                if(friend.messageCount < 2 && !sourceUser.receivedFrom.contains(mobileNo) && !friend.receivedFrom.contains(sourceUser.mobileNo)) {
+                    friend.messageCount++;
+                    Log.d("temp", friend.getName() + " " + friend.messageCount);
+                    friend.receivedFrom.add(sourceUser.mobileNo);
+                    if(!queue.contains(friend))
+                        queue.add(friend);
+                }
+            }
+        }
+    }
+
+
+    private void floodContacts(User currentSource)
+    {
+        for(String mobileNo: currentSource.contacts.keySet()) {
+            User friend = currentSource.contacts.get(mobileNo);
+            if(friend.messageCount < 2 && !currentSource.receivedFrom.contains(mobileNo) && !friend.receivedFrom.contains(currentSource.mobileNo)) {
+                friend.messageCount++;
+                friend.receivedFrom.add(currentSource.mobileNo);
+                floodContacts(friend);
+            }
+        }
+    }
+
+
+
+    private void clearGraph()
+    {
+        nodes.clear();
+        ids.clear();
+        resume();
     }
 
 
@@ -87,8 +154,13 @@ public class MainActivity extends AppCompatActivity implements Runnable
 
         for (int i = 0; i < manager.userList.size(); i++)
         {
-
-            nodes.set(i, new SimpleNode("" + manager.userList.get(i).getName()));
+            if(currentSource.equals(manager.userList.get(i)))
+            {
+                nodes.set(i, new SimpleNode("SOURCE " + manager.userList.get(i).getName() + "," + manager.userList.get(i).messageCount));
+            }
+            else {
+                nodes.set(i, new SimpleNode("" + manager.userList.get(i).getName() + "," + manager.userList.get(i).messageCount));
+            }
             ids.add(manager.userList.get(i).getName());
             graph.add(nodes.get(i));
         }
@@ -105,15 +177,18 @@ public class MainActivity extends AppCompatActivity implements Runnable
             }
         }
 
-        View surface = findViewById(R.id.mysurface);
-        RelativeLayout parent = (RelativeLayout) surface.getParent();
-        int index = parent.indexOfChild(surface);
+        if(findViewById(R.id.mysurface) != null)
+        {
+            View surface = findViewById(R.id.mysurface);
+            RelativeLayout parent = (RelativeLayout) surface.getParent();
+            int index = parent.indexOfChild(surface);
 
-        parent.removeView(surface);
-        graphSurface = new GraphSurfaceView(this.getApplicationContext());
-        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(width, height);
-        // layoutParams.addRule(RelativeLayout.BELOW, R.id.buttonswap);
-        parent.addView(graphSurface, index, layoutParams);
+            parent.removeView(surface);
+            graphSurface = new GraphSurfaceView(this.getApplicationContext());
+            RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(width, height);
+            // layoutParams.addRule(RelativeLayout.BELOW, R.id.buttonswap);
+            parent.addView(graphSurface, index, layoutParams);
+        }
         holder = graphSurface.getHolder();
         currentGraphView = new GraphView(this);
         currentGraphView.init(graph, new Dimension(400, 400));

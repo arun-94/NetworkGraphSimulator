@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -26,6 +27,7 @@ public class GetUserDetailsActivity extends AppCompatActivity
     @Bind(R.id.editText_user_age) EditText age;
     @Bind(R.id.layoutcontainer) LinearLayout linearLayout;
     @Bind(R.id.userId) TextView textView;
+    @Bind(R.id.is_source) CheckBox is_source;
 
     private int count = 0;
     private int i = 0;
@@ -80,6 +82,14 @@ public class GetUserDetailsActivity extends AppCompatActivity
                 if(i == count)
                 {
 //                    SaveDetails();
+
+                    for(int j = 0; j < manager.userList.size(); j++)
+                    {
+                        for (User user : manager.userList.get(j).getFriends())
+                        {
+                            manager.userList.get(j).contacts.put(user.mobileNo, user);
+                        }
+                    }
                     Intent i1 = new Intent(GetUserDetailsActivity.this, MainActivity.class);
                     startActivity(i1);
                 }
@@ -90,6 +100,7 @@ public class GetUserDetailsActivity extends AppCompatActivity
                     address.setText("");
                     email.setText("");
                     mobile.setText("");
+                    is_source.setChecked(false);
                     friendText.setText("Add Friends");
 
                 }
@@ -105,6 +116,7 @@ public class GetUserDetailsActivity extends AppCompatActivity
         manager.userList.get(i).setAddress(address.getText().toString().trim());
         manager.userList.get(i).setEmailId(email.getText().toString().trim());
         manager.userList.get(i).setAge(age.getText().toString().trim());
+        manager.userList.get(i).setIs_Source(is_source.isChecked());
     }
 
     @Override
